@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        // eslint-disable-next-line no-useless-escape
         match: [/.+\@.+\..+/, 'Please fill a valid email address']
     },
     password: {
