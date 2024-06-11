@@ -18,8 +18,9 @@ const loginPage = (req, res) => {
 
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
+console.log(password, user.password);
+
   if (user && (password ===  user.password)) {
    const accessToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '15s' })
    const refreshToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '1d' })
