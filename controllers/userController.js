@@ -3,7 +3,6 @@ const User = require("../models/userModel");
 const { ObjectId } = require("mongoose").Types;
 
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const Recipe = require("../models/recipe");
 const homePage = (req, res) => {
   if (req.user) {
@@ -21,7 +20,7 @@ const userLogin = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (user && (await bcrypt.compare(password, user.password))) {
+  if (user && (password ===  user.password)) {
    const accessToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '15s' })
    const refreshToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '1d' })
 
@@ -49,11 +48,11 @@ const userSignUp = async (req, res) => {
       return res.status(400).send("User already exist");
     }
 
-    const hashPassword = await bcrypt.hash(password, 10);
+    
     const newUser = new User({
       name,
       email,
-      password: hashPassword,
+      password
     });
 
     await newUser.save();
