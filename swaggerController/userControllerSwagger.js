@@ -335,3 +335,73 @@
  *       500:
  *         description: Internal server error
  */
+
+
+/**
+ * @swagger
+ * /recipes:
+ *   get:
+ *     summary: User get all recipes
+ *     tags:
+ *       - Recipes
+ *     responses:
+ *       '200':
+ *         description: Return all recipes for the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Recipe'
+ *       '500':
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+* /recipe/{recipeID}:
+*   delete:
+*     summary: User delete Recipe
+*     tags:
+*       - Recipes
+*     parameters:
+*       - name: recipeID
+*         in: path
+*         required: true
+*         schema:
+*           type: string
+*         description: The ID of the recipe to delete
+*     responses:
+*       '200':
+*         description: Recipe deleted successfully
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: Recipe deleted successfully
+*       '400':
+*         description: Recipe ID is required
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: Recipe ID is required
+*       '404':
+*         description: Recipe not found
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: Recipe not found
+*       '500':
+*         description: Internal server error
+*/
