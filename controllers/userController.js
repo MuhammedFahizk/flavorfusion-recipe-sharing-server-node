@@ -57,14 +57,11 @@ const userSignUp = async (req, res) => {
     });
 
     await newUser.save();
-    const token = jwt.sign(
-      { email, userId: newUser._id },
-      process.env.JWTSecretKey,
-      { expiresIn: "1h" }
-    );
-    res.cookie("token", token, {
-      httpOnly: true,
-    });
+    const accessToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '15s' })
+    const refreshToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '1d' })
+ 
+    res.cookie('refreshToken', refreshToken, {httpOnly : true, sameSite: 'strict'})
+    .cookie('accessToken', accessToken)
     res.status(201).send("Successfully signed up");
   } catch (error) {
     if (error.name === "ValidationError") {
