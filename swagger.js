@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const swaggerJsdoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 
@@ -11,7 +12,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${3000}/`
+        url: process.env.BASE_URL || `http://localhost:3000/`
       },
     ],
   },
