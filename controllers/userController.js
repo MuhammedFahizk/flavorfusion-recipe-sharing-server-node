@@ -57,8 +57,8 @@ const userSignUp = async (req, res) => {
     });
 
     await newUser.save();
-    const accessToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '15s' })
-    const refreshToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '1d' })
+    const accessToken = jwt.sign({user: newUser}, process.env.JWTSecretKey,{ expiresIn: '15s' })
+    const refreshToken = jwt.sign({user:newUser}, process.env.JWTSecretKey,{ expiresIn: '1d' })
  
     res.cookie('refreshToken', refreshToken, {httpOnly : true, sameSite: 'strict'})
     .cookie('accessToken', accessToken)
