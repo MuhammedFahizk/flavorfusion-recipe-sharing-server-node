@@ -77,8 +77,19 @@ const profilePage = (req, res) => {
   res.status(200).json(user);
 };
 
+
+const userLogout = (req,res) => {
+   const user = req.user
+   if (!user) {
+    return res.status(401).send("Unauthorized");
+   } 
+   res.clearCookie('refreshToken')
+   .clearCookie('accessToken')
+   .status(200).send("Logged out successfully")
+}
 const userAddRecipe = async (req, res) => {
-  const userID = req.user.userId;
+  const userID = req.user._id;
+  
   const { ...recipeDetails } = req.body;
   console.log("gfgh", recipeDetails);
 
@@ -109,7 +120,7 @@ const userUpdateRecipe = async (req, res) => {
   if (!recipeId) {
     return res.status(400).json({ error: "Recipe ID is required" });
   }
-  console.log(recipeId);
+ 
 
   try {
     const recipe = await Recipe.findById(recipeId);
@@ -132,23 +143,24 @@ const userUpdateRecipe = async (req, res) => {
       return res.status(400).json({ error: errorMessages.join(", ") });
     }
 
-    res.status(500).json({ error: "Failed to update recipe" });
+    res.status(500).json({ error: `Failed to update recipe ${error}` });
   }
 };
 
 const userRecipe = async (req, res) => {
   try {
     const { userID } = req.params;
+    
     if (!userID) {
       return res.status(400).json({ error: "User ID is required" });
     }
     const recipes = await Recipe.find({ userID: new ObjectId(userID) });
-    console.log(recipe);
     if (!recipes || recipes.length === 0) {
       return res.status(404).json({ error: "No recipes found for this user." });
     }
     res.status(200).json(recipes);
   } catch {
+
     res.status(500).json({ error: "Failed to update recipe" });
   }
 };
@@ -209,4 +221,5 @@ module.exports = {
   recipes,
   userDeleteRecipe,
   selectedRecipe,
+  userLogout,
 };

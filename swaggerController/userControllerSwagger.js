@@ -14,6 +14,8 @@
  * @swagger
  * /login:
  *   get:
+ *     tags:
+ *       - User
  *     summary: Login page
  *     responses:
  *       200:
@@ -25,6 +27,8 @@
  * @swagger
  * /login:
  *   post:
+ *     tags:
+ *       - User
  *     summary: User login
  *     requestBody:
  *       required: true
@@ -50,6 +54,8 @@
  * @swagger
  * /signup:
  *   get:
+ *     tags:
+ *       - User
  *     summary: Sign up page
  *     responses:
  *       200:
@@ -62,6 +68,8 @@
  * /signup:
  *   post:
  *     summary: User sign up
+ *     tags:
+ *       - User
  *     requestBody:
  *       required: true
  *       content:
@@ -93,11 +101,41 @@
  * /profile:
  *   get:
  *     summary: Profile page
+ *     tags:
+ *       - User
  *     responses:
  *       200:
  *         description: Returns the profile of the authenticated user
  */
 
+
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: User Logout
+ *     description: Logs out the authenticated user by clearing the refresh and access tokens.
+ *     tags:
+ *       - User
+ *     responses:
+ *       '200':
+ *         description: Successfully logged out.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Logged out successfully"
+ *       '401':
+ *         description: Unauthorized. User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Unauthorized"
+ *     security:
+ *       - bearerAuth: []
+ */
 
 /**
  * @swagger
