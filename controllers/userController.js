@@ -19,16 +19,24 @@ const loginPage = (req, res) => {
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-console.log(password, user.password);
+  console.log(password, user.password);
 
-  if (user && (password ===  user.password)) {
-   const accessToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '15s' })
-   const refreshToken = jwt.sign({user}, process.env.JWTSecretKey,{ expiresIn: '1d' })
+  if (user && password === user.password) {
+    const accessToken = jwt.sign({ user }, process.env.JWTSecretKey, {
+      expiresIn: "15s",
+    });
+    const refreshToken = jwt.sign({ user }, process.env.JWTSecretKey, {
+      expiresIn: "1d",
+    });
 
-   res.cookie('refreshToken', refreshToken, {httpOnly : true, sameSite: 'strict'})
-   .cookie('accessToken', accessToken)
-   .status(200).json({message: 'Logged in successfully'})
-   
+    res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "strict",
+      })
+      .cookie("accessToken", accessToken)
+      .status(200)
+      .json({ message: "Logged in successfully" });
   } else {
     res.status(401).send("Invalid Credentials");
   }
@@ -49,19 +57,26 @@ const userSignUp = async (req, res) => {
       return res.status(400).send("User already exist");
     }
 
-    
     const newUser = new User({
       name,
       email,
-      password
+      password,
     });
 
     await newUser.save();
-    const accessToken = jwt.sign({user: newUser}, process.env.JWTSecretKey,{ expiresIn: '15s' })
-    const refreshToken = jwt.sign({user:newUser}, process.env.JWTSecretKey,{ expiresIn: '1d' })
- 
-    res.cookie('refreshToken', refreshToken, {httpOnly : true, sameSite: 'strict'})
-    .cookie('accessToken', accessToken)
+    const accessToken = jwt.sign({ user: newUser }, process.env.JWTSecretKey, {
+      expiresIn: "15s",
+    });
+    const refreshToken = jwt.sign({ user: newUser }, process.env.JWTSecretKey, {
+      expiresIn: "1d",
+    });
+
+    res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "strict",
+      })
+      .cookie("accessToken", accessToken);
     res.status(201).send("Successfully signed up");
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -77,19 +92,20 @@ const profilePage = (req, res) => {
   res.status(200).json(user);
 };
 
-
-const userLogout = (req,res) => {
-   const user = req.user
-   if (!user) {
+const userLogout = (req, res) => {
+  const user = req.user;
+  if (!user) {
     return res.status(401).send("Unauthorized");
-   } 
-   res.clearCookie('refreshToken')
-   .clearCookie('accessToken')
-   .status(200).send("Logged out successfully")
-}
+  }
+  res
+    .clearCookie("refreshToken")
+    .clearCookie("accessToken")
+    .status(200)
+    .send("Logged out successfully");
+};
 const userAddRecipe = async (req, res) => {
   const userID = req.user._id;
-  
+
   const { ...recipeDetails } = req.body;
   console.log("gfgh", recipeDetails);
 
@@ -120,7 +136,6 @@ const userUpdateRecipe = async (req, res) => {
   if (!recipeId) {
     return res.status(400).json({ error: "Recipe ID is required" });
   }
- 
 
   try {
     const recipe = await Recipe.findById(recipeId);
@@ -150,7 +165,7 @@ const userUpdateRecipe = async (req, res) => {
 const userRecipe = async (req, res) => {
   try {
     const { userID } = req.params;
-    
+
     if (!userID) {
       return res.status(400).json({ error: "User ID is required" });
     }
@@ -160,7 +175,6 @@ const userRecipe = async (req, res) => {
     }
     res.status(200).json(recipes);
   } catch {
-
     res.status(500).json({ error: "Failed to update recipe" });
   }
 };
@@ -177,13 +191,25 @@ const recipes = async (req, res) => {
 const userDeleteRecipe = async (req, res) => {
   try {
     const { recipeID } = req.params;
+    const userID = req.user.id; // Assuming you have user ID from authentication middleware
+
     if (!recipeID) {
       return res.status(400).json({ error: "Recipe ID is required" });
     }
-    const result = await Recipe.deleteOne({ _id: recipeID });
-    if (result.deletedCount === 0) {
+
+    // Find the recipe to ensure it exists and is owned by the user
+    const recipe = await Recipe.findOne({ _id: recipeID });
+
+    if (!recipe) {
       return res.status(404).json({ error: "Recipe not found" });
     }
+
+    if (recipe.userID.toString() !== userID) {
+      return res.status(403).json({ error: "You are not authorized to delete this recipe" });
+    }
+
+    await Recipe.deleteOne({ _id: recipeID });
+
     res.status(200).json({ message: "Recipe deleted successfully" });
   } catch (error) {
     console.log(error);
@@ -191,23 +217,51 @@ const userDeleteRecipe = async (req, res) => {
   }
 };
 
-const selectedRecipe = async(req,res) => {
-try {
-    const {recipeId} = req.params
-    if (!recipeId) {
-        return res.status(400).json({ error: "Recipe ID is required" });
-        }
-        const recipe = await Recipe.findById(recipeId)
-        if (!recipe) {
-            return res.status(404).json({ error: "Recipe not found" });
-            }
-          return  res.status(200).json(recipe)
 
-}catch (error)  {
+const selectedRecipe = async (req, res) => {
+  try {
+    const { recipeId } = req.params;
+    if (!recipeId) {
+      return res.status(400).json({ error: "Recipe ID is required" });
+    }
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+    return res.status(200).json(recipe);
+  } catch (error) {
     console.log(error);
-    return res.status(500).json({error: 'internal server Error'})
-}
-}
+    return res.status(500).json({ error: "internal server Error" });
+  }
+};
+
+const searchRecipe = async (req, res) => {
+  try {
+    const { search } = req.params;
+    if (!search) {
+      const recipe = await Recipe.find();
+      return res.status(200).json(recipe);
+    }
+    const searchAggregation = [
+      { 
+        $match: {
+          $or: [
+            { title: { $regex: search , $options: 'i' } } ,
+            { description: { $regex: search , $options: 'i' } } ,
+            { tags: { $regex: search , $options: 'i' } } ,
+
+          ]
+        }
+       }
+      ];
+      
+      const recipes = await Recipe.aggregate(searchAggregation);
+      return res.status(200).json(recipes);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("internal server error");
+  }
+};
 module.exports = {
   homePage,
   loginPage,
@@ -222,4 +276,5 @@ module.exports = {
   userDeleteRecipe,
   selectedRecipe,
   userLogout,
+  searchRecipe,
 };

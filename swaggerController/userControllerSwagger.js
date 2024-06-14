@@ -242,6 +242,13 @@
  *       - Recipes
  *     parameters:
  *       - in: body
+ *         name: recipeId
+ *         description: the recipe ID for find recipe
+ *         require: true
+ *         schema:
+ *           type: string
+ *         example: '666a8c98ffe66cd022b45508'
+ *       - in: body
  *         name: recipe
  *         description: The recipe details
  *         required: true
@@ -329,7 +336,7 @@
 
 /**
  * @swagger
- * /recipe/{userID}:
+ * /recipes/{userID}:
  *   get:
  *     summary: Get all recipes for a user
  *     tags:
@@ -443,3 +450,32 @@
 *       '500':
 *         description: Internal server error
 */
+
+/**
+ * @swagger
+ * /recipes/search/{search}:
+ *   get:
+ *     summary: Search for recipes
+ *     description: Search for recipes by title, description, or tags.
+ *     tags:
+*       - Recipes
+ *     parameters:
+ *       - in: path
+ *         name: search
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: The search term to filter recipes.
+ *     responses:
+ *       200:
+ *         description: A list of recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Recipe'
+ *                
+ *       500:
+ *         description: Internal server error
+ */

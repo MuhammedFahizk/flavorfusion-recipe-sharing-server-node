@@ -20,7 +20,7 @@ router.get('/recipes',  userController.recipes)
 router.get('/recipe/:recipeId',  userController.selectedRecipe)
 
 
-
+router.get('/recipes/search/:search', userController.searchRecipe)
 
 
 
