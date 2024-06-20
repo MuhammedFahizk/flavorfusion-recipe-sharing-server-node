@@ -447,6 +447,16 @@
 *                 message:
 *                   type: string
 *                   example: Recipe not found
+*       '403':
+*         description: You are not authorized to delete this recipe
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 message:
+*                   type: string
+*                   example: You are not authorized to delete this recipe
 *       '500':
 *         description: Internal server error
 */
